@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 import re
@@ -127,8 +126,17 @@ def main():
                 
                 # Processar arquivo
                 st.markdown("---")
-                processor = PDFProcessor()
-                transactions = processor.extract_transactions(uploaded_file)
+                
+                # Criar elementos de progresso
+                st.info("🔄 **Iniciando processamento...**")
+                progress_bar = st.progress(0)
+                status_text = st.empty()
+                
+                # Obter debug_mode do session_state se existir
+                debug_mode = st.session_state.get('debug_mode', False)
+                
+                processor = PDFProcessor(debug_mode=debug_mode)
+                transactions = processor.extract_transactions(uploaded_file, progress_bar, status_text)
                 
                 # Salvar no cache se encontrou transações
                 if transactions:
@@ -340,19 +348,25 @@ def display_charts(daily_summary):
             yaxis_title='Valor (R$)',
             barmode='group'
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
     
     with col2:
         # Gráfico de linha - Saldo acumulado
-        fig = px.line(
-            daily_summary, 
-            x='data', 
-            y='saldo',
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=daily_summary['data'],
+            y=daily_summary['saldo'],
+            mode='lines+markers',
+            line={'color': 'blue'},
+            name='Saldo'
+        ))
+        
+        fig.update_layout(
             title='Saldo Diário',
-            markers=True
+            xaxis_title='Data',
+            yaxis_title='Saldo (R$)'
         )
-        fig.update_traces(line_color='blue')
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
 def display_detailed_transactions(transactions):
     """Exibe tabela detalhada das transações otimizada"""
@@ -374,14 +388,14 @@ def display_detailed_transactions(transactions):
                 'valor': ['count', 'sum'],
                 'tipo': lambda x: (x == 'Crédito').sum()
             }).round(2)
-            st.dataframe(monthly_summary, use_container_width=True)
+            st.dataframe(monthly_summary, width='stretch')
             return
         
         elif view_option == "🔍 Busca Específica":
             search_term = st.text_input("🔍 Buscar na descrição:")
             if search_term:
                 filtered_df = df[df['descricao'].str.contains(search_term, case=False, na=False)]
-                st.dataframe(filtered_df, use_container_width=True)
+                st.dataframe(filtered_df, width='stretch')
             return
     
     # Filtros padrão
@@ -413,7 +427,7 @@ def display_detailed_transactions(transactions):
     # Exibir tabela
     st.dataframe(
         filtered_df,
-        use_container_width=True,
+        width='stretch',
         column_config={
             "data": "Data",
             "descricao": "Descrição",

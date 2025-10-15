@@ -1,8 +1,104 @@
-# Leitor de PDF - Extrato Bancário
+# Leitor PDF - Extrato Bancário
 
-Um sistema completo em Python com Streamlit para ler arquivos PDF de extratos bancários e organizar as transações por data, separando créditos e débitos.
+Sistema para análise de extratos bancários em PDF, desenvolvido com Python e Streamlit.
 
-## 🚀 Funcionalidades
+## 🚀 Características
+
+- **📄 Processamento de PDF**: Extrai automaticamente transações bancárias
+- **📊 Organização por Data**: Agrupa créditos e débitos por dia
+- **📈 Gráficos Interativos**: Visualizações dinâmicas dos dados
+- **🔧 Múltiplas Estratégias**: Diferentes métodos de extração para máxima compatibilidade
+- **🤖 OCR Integrado**: Reconhecimento automático de PDFs escaneados (EasyOCR)
+
+## 📋 Instalação
+
+1. **Clone o repositório:**
+```bash
+git clone https://github.com/seu-usuario/leitor-pdf.git
+cd leitor-pdf
+```
+
+2. **Instale as dependências básicas:**
+```bash
+pip install streamlit pdfplumber pandas plotly PyMuPDF Pillow
+```
+
+3. **Para OCR (PDFs escaneados) - Opcional:**
+```bash
+pip install easyocr
+```
+*Nota: EasyOCR é um pacote grande (~1GB) que inclui PyTorch. Instale apenas se precisar processar PDFs escaneados.*
+
+## 🏃‍♂️ Como Usar
+
+### Windows:
+```powershell
+./start.ps1
+```
+
+### Linux/Mac:
+```bash
+streamlit run app.py
+```
+
+Acesse: `http://localhost:8501`
+
+## 📊 Funcionalidades
+
+### 📁 Upload
+- Faça upload do seu extrato bancário em PDF
+- Suporte a arquivos grandes
+- Múltiplas estratégias de processamento
+
+### 📈 Análise
+- Resumo diário de créditos e débitos
+- Gráficos de barras por data
+- Linha temporal do saldo
+
+### 🎯 Formato Esperado
+```
+01/08 Crédito: R$ 2.000,00 Débito: R$ 3.000,00
+02/08 Crédito: R$ 1.500,00 Débito: R$ 800,00
+```
+
+## 📄 PDFs Escaneados
+
+✅ **Agora suportado automaticamente!**
+
+A aplicação tenta automaticamente 3 estratégias:
+
+1. **Texto padrão** (pdfplumber) - Para PDFs normais
+2. **Extração avançada** (PyMuPDF) - Para PDFs complexos  
+3. **OCR automático** (EasyOCR) - Para PDFs escaneados
+
+**Para ativar OCR:**
+```bash
+pip install easyocr
+```
+
+**Alternativas se não quiser instalar OCR:**
+- **Conversão Online**: PDF24, SmallPDF, ILovePDF
+- **Bancos Digitais**: Use extratos que já geram PDFs com texto
+
+## 🐛 Problemas Comuns
+
+**PDF não processa**: Verifique se tem texto selecionável (não é escaneado)
+**Valores não detectados**: Confirme formato brasileiro (R$ 1.000,00)
+**Porta ocupada**: Use `streamlit run app.py --server.port=8502`
+
+## � Estrutura
+
+```
+leitor-pdf/
+├── app.py              # Aplicação principal
+├── requirements.txt    # Dependências
+├── start.ps1          # Script inicialização
+└── src/               # Código fonte
+```
+
+## 📄 Licença
+
+MIT License - veja [LICENSE](LICENSE) para detalhes.
 
 - **📁 Upload de PDF**: Interface simples para carregar extratos bancários
 - **🔍 Extração Automática**: Reconhece automaticamente datas, valores e tipos de transação

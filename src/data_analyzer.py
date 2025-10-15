@@ -10,10 +10,28 @@ class DataAnalyzer:
         self.df = pd.DataFrame(transactions) if transactions else pd.DataFrame()
         
         if not self.df.empty:
-            # Converter data para datetime
-            self.df['data_dt'] = pd.to_datetime(self.df['data'], format='%d/%m/%Y', errors='coerce')
+            # Converter data para datetime com tratamento de erros melhorado
+            self.df['data_dt'] = pd.to_datetime(
+                self.df['data'], 
+                format='%d/%m/%Y', 
+                errors='coerce',
+                dayfirst=True
+            )
+            
+            # Remover linhas com datas inválidas
+            invalid_dates = self.df['data_dt'].isna()
+            if invalid_dates.any():
+                try:
+                    import streamlit as st
+                    st.warning(f"⚠️ {invalid_dates.sum()} transação(ões) com datas inválidas foram removidas")
+                except ImportError:
+                    # Se não estiver no contexto Streamlit, apenas imprimir
+                    print(f"⚠️ {invalid_dates.sum()} transação(ões) com datas inválidas foram removidas")
+                self.df = self.df[~invalid_dates]
+            
             # Ordenar por data
-            self.df = self.df.sort_values('data_dt')
+            if not self.df.empty:
+                self.df = self.df.sort_values('data_dt')
     
     def get_daily_summary(self) -> pd.DataFrame:
         """Retorna resumo diário com totais de crédito e débito por data"""
@@ -49,7 +67,14 @@ class DataAnalyzer:
         # Criar DataFrame e ordenar por data
         summary_df = pd.DataFrame(daily_data)
         if not summary_df.empty:
-            summary_df['data_dt'] = pd.to_datetime(summary_df['data'], format='%d/%m/%Y')
+            summary_df['data_dt'] = pd.to_datetime(
+                summary_df['data'], 
+                format='%d/%m/%Y', 
+                errors='coerce',
+                dayfirst=True
+            )
+            # Remover linhas com datas inválidas
+            summary_df = summary_df.dropna(subset=['data_dt'])
             summary_df = summary_df.sort_values('data_dt').drop('data_dt', axis=1)
         
         return summary_df
