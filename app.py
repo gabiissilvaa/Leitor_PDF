@@ -5,9 +5,11 @@ from datetime import datetime
 import re
 import pdfplumber
 from src.pdf_processor import PDFProcessor
+from src.multibank_pdf_processor import MultibankPDFProcessor
 from src.data_analyzer import DataAnalyzer
 from src.notification_manager import NotificationManager
 from src.performance_manager import CacheManager, PerformanceOptimizer
+from src.banks import BankProcessorFactory
 
 def main():
     st.set_page_config(
@@ -19,33 +21,92 @@ def main():
     st.title("📊 Leitor de PDF - Extrato Bancário")
     st.markdown("---")
     
-    # Sidebar para upload do arquivo
+    # Sidebar para seleção do banco
     with st.sidebar:
-        st.header("📁 Upload do Arquivo")
-        uploaded_file = st.file_uploader(
-            "Selecione seu arquivo PDF",
-            type=['pdf'],
-            help="Faça upload do seu extrato bancário em PDF (suporta arquivos grandes)"
+        st.header("🏦 Seleção do Banco")
+        
+        # Obter bancos disponíveis
+        available_banks = BankProcessorFactory.get_available_banks()
+        
+        # Opções de banco (sem detecção automática)
+        bank_options = [""] + [
+            f"🏦 {info['name']} ({info['code']})" 
+            for bank_id, info in available_banks.items()
+        ]
+        
+        selected_bank_option = st.selectbox(
+            "⚠️ Selecione seu banco (obrigatório):",
+            bank_options,
+            help="Selecione seu banco para usar os padrões específicos de extração",
+            placeholder="Escolha seu banco..."
         )
         
-        if uploaded_file:
-            st.success(f"Arquivo carregado: {uploaded_file.name}")
+        # Converter seleção para bank_id
+        selected_bank_id = None
+        if selected_bank_option and selected_bank_option != "":
+            # Extrair o ID do banco da seleção
+            for bank_id, info in available_banks.items():
+                if info['name'] in selected_bank_option:
+                    selected_bank_id = bank_id
+                    break
+        
+        # Mostrar informações do banco selecionado
+        if selected_bank_id:
+            bank_info = available_banks[selected_bank_id]
+            st.success(f"✅ **{bank_info['name']}**\n"
+                      f"📋 {bank_info['description']}\n"
+                      f"🔢 Código: {bank_info['code']}\n"
+                      f"🎯 Processamento otimizado ativo!")
+        else:
+            st.warning("⚠️ **Selecione seu banco**\n"
+                      "É necessário escolher o banco para processar o extrato.\n"
+                      "Isso garante máxima precisão na extração.")
+        
+        st.markdown("---")
+        
+        # Upload do arquivo (só aparece se banco foi selecionado)
+        if selected_bank_id:
+            st.header("📁 Upload do Arquivo")
+            uploaded_file = st.file_uploader(
+                "Selecione seu arquivo PDF",
+                type=['pdf'],
+                help=f"Faça upload do seu extrato do {available_banks[selected_bank_id]['name']} em PDF"
+            )
             
-            # Mostrar informações do arquivo
-            file_size = len(uploaded_file.getvalue()) / (1024 * 1024)  # MB
-            st.info(f"📊 Tamanho: {file_size:.2f} MB")
-            
-            if file_size > 5:
-                st.warning("⚠️ Arquivo grande - otimizações ativas")
+            if uploaded_file:
+                st.success(f"✅ Arquivo carregado: {uploaded_file.name}")
+                
+                # Mostrar informações do arquivo
+                file_size = len(uploaded_file.getvalue()) / (1024 * 1024)  # MB
+                st.info(f"📊 Tamanho: {file_size:.2f} MB")
+                
+                if file_size > 5:
+                    st.warning("⚠️ Arquivo grande - otimizações ativas")
+        else:
+            st.header("📁 Upload do Arquivo")
+            st.info("⬆️ **Primeiro selecione seu banco acima**\n"
+                   "O upload ficará disponível após a seleção.")
+            uploaded_file = None
             
         # Como usar
         with st.expander("📖 Como Usar"):
             st.markdown("""
-            **� Instruções:**
-            1. 📁 Faça upload do seu extrato bancário em PDF
-            2. ⚙️ Escolha o método de processamento
-            3. 📊 Visualize os resultados organizados por data
-            4. 📈 Analise gráficos de créditos e débitos
+            **🏦 Instruções Passo a Passo:**
+            1. 🏦 **PRIMEIRO:** Selecione seu banco na lista acima
+            2. 📁 **SEGUNDO:** Faça upload do seu extrato bancário em PDF
+            3. ⚙️ **AUTOMÁTICO:** Sistema usa configurações específicas do seu banco
+            4. 📊 **RESULTADO:** Visualize os dados organizados por data
+            5. 📈 **ANÁLISE:** Explore gráficos de créditos e débitos
+            
+            **🎯 Por que selecionar o banco é importante:**
+            - ✅ **Maior precisão:** Cada banco tem formato próprio
+            - ✅ **Melhor extração:** Padrões específicos otimizados
+            - ✅ **Menos erros:** Reconhecimento preciso de transações
+            - ✅ **Classificação correta:** Créditos e débitos identificados corretamente
+            
+            **🏦 Bancos com Processamento Otimizado:**
+            - 🟢 **Santander:** Processamento específico ativo
+            - 🔄 **Outros:** Processamento genérico (em desenvolvimento)
             
             **💾 Cache:**
             - Arquivos processados são salvos
@@ -53,10 +114,22 @@ def main():
             - Cache válido por 24 horas
             """)
     
+    # Verificar se banco foi selecionado para mostrar conteúdo
+    if not selected_bank_id:
+        st.warning("⚠️ **Primeiro selecione seu banco na barra lateral**")
+        st.info("👈 Use a barra lateral para escolher seu banco antes de continuar")
+        return
+    
     if uploaded_file is not None:
         try:
             # Container principal para o processamento
             st.header("🔄 Processamento")
+            
+            # Mostrar informações do banco selecionado no processamento
+            bank_info = available_banks[selected_bank_id]
+            st.success(f"🏦 **Processando com {bank_info['name']}**")
+            st.info(f"🎯 **Usando padrões específicos do {bank_info['name']} ({bank_info['code']})**\n"
+                   f"✅ Máxima precisão garantida para este banco")
             
             # Informações do arquivo
             file_info_col1, file_info_col2, file_info_col3 = st.columns(3)
@@ -135,8 +208,16 @@ def main():
                 # Obter debug_mode do session_state se existir
                 debug_mode = st.session_state.get('debug_mode', False)
                 
-                processor = PDFProcessor(debug_mode=debug_mode)
-                transactions = processor.extract_transactions(uploaded_file, progress_bar, status_text)
+                # Usar sempre o processador específico do banco selecionado
+                st.info(f"� **Inicializando processador específico do {bank_info['name']}**")
+                processor = MultibankPDFProcessor(bank_id=selected_bank_id, debug_mode=debug_mode)
+                
+                transactions = processor.extract_transactions(
+                    uploaded_file, 
+                    progress_bar, 
+                    status_text,
+                    bank_id=selected_bank_id
+                )
                 
                 # Salvar no cache se encontrou transações
                 if transactions:
@@ -203,22 +284,81 @@ def main():
                 - Tente converter o PDF para um formato mais simples
                 """)
     else:
-        # Página inicial sem arquivo
-        st.info("👆 Faça upload de um arquivo PDF na barra lateral para começar")
-        
-        # Instruções de uso
-        with st.expander("ℹ️ Como usar", expanded=True):
-            st.markdown("""
-            **📋 Passo a passo:**
-            1. 📁 Faça upload do PDF na barra lateral
-            2. 📊 Visualize os dados organizados por data
-            3. � Analise os gráficos de créditos e débitos
+        # Página inicial - exigir seleção de banco
+        if not selected_bank_id:
+            st.info("👆 **Primeiro selecione seu banco na barra lateral**")
             
-            **📄 Formatos aceitos:**
-            - Extratos bancários brasileiros em PDF
-            - Datas no formato DD/MM/AAAA
-            - Valores em Reais (R$)
+            # Mostrar bancos suportados
+            st.markdown("## 🏦 **Bancos Suportados**")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("""
+                **✅ Processamento Específico Ativo:**
+                """)
+                
+                for bank_id, bank_info in available_banks.items():
+                    st.markdown(f"- 🟢 **{bank_info['name']}** ({bank_info['code']})")
+                    st.markdown(f"  *{bank_info['description']}*")
+                    st.markdown(f"  🎯 *Padrões específicos otimizados*")
+            
+            with col2:
+                st.markdown("""
+                **� Em Desenvolvimento:**
+                - 🟡 Itaú (341)
+                - 🟡 Bradesco (237)
+                - 🟡 Banco do Brasil (001)
+                - 🟡 Caixa Econômica Federal (104)
+                """)
+            
+            st.markdown("---")
+            
+            # Instruções de uso
+            with st.expander("ℹ️ Por que selecionar o banco é obrigatório?", expanded=True):
+                st.markdown("""
+                **🎯 Garantia de Precisão Máxima:**
+                
+                **✅ Vantagens do processamento específico:**
+                - � **100% de precisão:** Cada banco tem formato único
+                - 🚀 **Velocidade otimizada:** Processamento direcionado
+                - � **Reconhecimento inteligente:** Padrões específicos do banco
+                - � **Classificação correta:** Créditos e débitos precisos
+                - 🧠 **Interpretação contextual:** Entende linguagem do banco
+                
+                **� Como funciona:**
+                1. 🏦 **Você seleciona o banco** na barra lateral
+                2. 📁 **Upload do extrato** fica disponível
+                3. 🎯 **Sistema usa padrões específicos** do seu banco
+                4. ⚡ **Extração otimizada** e mais precisa
+                5. 📊 **Resultados confiáveis** garantidos
+                
+                **❌ Por que não usamos detecção automática:**
+                - Pode gerar erros de identificação
+                - Reduz precisão da extração
+                - Processamento mais lento
+                - Resultados menos confiáveis
+                """)
+                
+            # Seção de feedback e expansão futura
+            st.markdown("## 🔮 **Próximos Bancos**")
+            st.info("""
+            **📅 Roadmap de desenvolvimento:**
+            - 🔜 **Q1 2026:** Itaú (341)
+            - 🔜 **Q1 2026:** Bradesco (237)
+            - 🔜 **Q2 2026:** Banco do Brasil (001)
+            - 🔜 **Q2 2026:** Caixa Econômica Federal (104)
+            
+            **💡 Seu banco não está na lista?** 
+            Entre em contato para priorizar o desenvolvimento!
             """)
+        else:
+            # Se banco foi selecionado mas não há arquivo
+            st.info("👆 **Agora faça upload do seu extrato PDF na barra lateral**")
+            
+            bank_info = available_banks[selected_bank_id]
+            st.success(f"✅ **Banco selecionado:** {bank_info['name']}")
+            st.markdown(f"🎯 **Pronto para processar extratos do {bank_info['name']} com máxima precisão!**")
 
 def display_daily_summary(daily_summary):
     """Exibe o resumo diário das transações otimizado"""

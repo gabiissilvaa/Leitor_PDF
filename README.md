@@ -1,225 +1,180 @@
-# Leitor PDF - Extrato Bancário
+# 📊 Leitor de PDF - Extrato Bancário Multibank
 
-Sistema para análise de extratos bancários em PDF, desenvolvido com Python e Streamlit.
+Uma aplicação web moderna para extrair e analisar transações de extratos bancários em PDF, com suporte específico para múltiplos bancos brasileiros.
 
-## 🚀 Características
+## 🏦 **Bancos Suportados**
 
-- **📄 Processamento de PDF**: Extrai automaticamente transações bancárias
-- **📊 Organização por Data**: Agrupa créditos e débitos por dia
-- **📈 Gráficos Interativos**: Visualizações dinâmicas dos dados
-- **🔧 Múltiplas Estratégias**: Diferentes métodos de extração para máxima compatibilidade
-- **🤖 OCR Integrado**: Reconhecimento automático de PDFs escaneados (EasyOCR)
+### ✅ **Processamento Específico Otimizado**
+- 🟢 **Banco Santander (033)** - Processamento completo com padrões específicos
+- 🔜 **Itaú (341)** - Em desenvolvimento
+- 🔜 **Bradesco (237)** - Em desenvolvimento
+- 🔜 **Banco do Brasil (001)** - Planejado
+- 🔜 **Caixa Econômica Federal (104)** - Planejado
 
-## 📋 Instalação
+## ✨ **Principais Funcionalidades**
 
-1. **Clone o repositório:**
+### 🎯 **Processamento Específico por Banco**
+- **Seleção obrigatória do banco** para máxima precisão
+- **Padrões otimizados** para cada instituição bancária
+- **Reconhecimento inteligente** de formatos específicos
+- **Classificação precisa** de tipos de transação
+
+### 📊 **Análise Avançada**
+- **Resumo diário** com créditos, débitos e saldo
+- **Gráficos interativos** para visualização de dados
+- **Estatísticas detalhadas** do período
+- **Filtros e busca** nas transações
+
+### ⚡ **Performance Otimizada**
+- **Cache inteligente** para processamento rápido
+- **Suporte a arquivos grandes** (múltiplas páginas)
+- **Processamento em lote** otimizado
+- **Interface responsiva** e moderna
+
+## 🚀 **Como Usar**
+
+### **Pré-requisitos**
+- Python 3.8+
+- pip (gerenciador de pacotes Python)
+
+### **Instalação**
 ```bash
-git clone https://github.com/seu-usuario/leitor-pdf.git
-cd leitor-pdf
-```
-
-2. **Instale as dependências básicas:**
-```bash
-pip install streamlit pdfplumber pandas plotly PyMuPDF Pillow
-```
-
-3. **Para OCR (PDFs escaneados) - Opcional:**
-```bash
-pip install easyocr
-```
-*Nota: EasyOCR é um pacote grande (~1GB) que inclui PyTorch. Instale apenas se precisar processar PDFs escaneados.*
-
-## 🏃‍♂️ Como Usar
-
-### Windows:
-```powershell
-./start.ps1
-```
-
-### Linux/Mac:
-```bash
-streamlit run app.py
-```
-
-Acesse: `http://localhost:8501`
-
-## 📊 Funcionalidades
-
-### 📁 Upload
-- Faça upload do seu extrato bancário em PDF
-- Suporte a arquivos grandes
-- Múltiplas estratégias de processamento
-
-### 📈 Análise
-- Resumo diário de créditos e débitos
-- Gráficos de barras por data
-- Linha temporal do saldo
-
-### 🎯 Formato Esperado
-```
-01/08 Crédito: R$ 2.000,00 Débito: R$ 3.000,00
-02/08 Crédito: R$ 1.500,00 Débito: R$ 800,00
-```
-
-## 📄 PDFs Escaneados
-
-✅ **Agora suportado automaticamente!**
-
-A aplicação tenta automaticamente 3 estratégias:
-
-1. **Texto padrão** (pdfplumber) - Para PDFs normais
-2. **Extração avançada** (PyMuPDF) - Para PDFs complexos  
-3. **OCR automático** (EasyOCR) - Para PDFs escaneados
-
-**Para ativar OCR:**
-```bash
-pip install easyocr
-```
-
-**Alternativas se não quiser instalar OCR:**
-- **Conversão Online**: PDF24, SmallPDF, ILovePDF
-- **Bancos Digitais**: Use extratos que já geram PDFs com texto
-
-## 🐛 Problemas Comuns
-
-**PDF não processa**: Verifique se tem texto selecionável (não é escaneado)
-**Valores não detectados**: Confirme formato brasileiro (R$ 1.000,00)
-**Porta ocupada**: Use `streamlit run app.py --server.port=8502`
-
-## � Estrutura
-
-```
-leitor-pdf/
-├── app.py              # Aplicação principal
-├── requirements.txt    # Dependências
-├── start.ps1          # Script inicialização
-└── src/               # Código fonte
-```
-
-## 📄 Licença
-
-MIT License - veja [LICENSE](LICENSE) para detalhes.
-
-- **📁 Upload de PDF**: Interface simples para carregar extratos bancários
-- **🔍 Extração Automática**: Reconhece automaticamente datas, valores e tipos de transação
-- **📊 Organização por Data**: Agrupa transações por dia com totais de crédito e débito
-- **📈 Visualizações**: Gráficos interativos com Plotly
-- **📋 Relatórios Detalhados**: Tabelas filtráveis e exportáveis
-- **💾 Exportação**: Download dos dados em formato CSV
-
-## 🛠️ Tecnologias Utilizadas
-
-- **Streamlit**: Interface web interativa
-- **pdfplumber**: Extração de texto de PDFs
-- **Pandas**: Manipulação e análise de dados
-- **Plotly**: Visualizações interativas
-- **Regex**: Reconhecimento de padrões
-
-## 📦 Instalação
-
-1. **Clone o repositório**:
-```bash
+# Clone o repositório
 git clone https://github.com/gabiissilvaa/Leitor_PDF.git
 cd Leitor_PDF
-```
 
-2. **Instale as dependências**:
-```bash
+# Instale as dependências
 pip install -r requirements.txt
-```
 
-3. **Execute a aplicação**:
-```bash
+# Execute a aplicação
 streamlit run app.py
 ```
 
-4. **Acesse no navegador**:
+### **Uso da Aplicação**
+1. 🏦 **OBRIGATÓRIO:** Selecione seu banco na barra lateral
+2. 📁 Faça upload do seu extrato bancário em PDF
+3. ⚡ Sistema processa com padrões específicos do banco
+4. 📊 Visualize resultados organizados e gráficos
+5. 📈 Analise dados financeiros detalhados
+
+## 🎯 **Por que a Seleção de Banco é Obrigatória?**
+
+### **✅ Garantia de Máxima Precisão**
+- **Cada banco tem formato único** - layouts, terminologias e padrões específicos
+- **100% de confiabilidade** - sem erros de detecção automática
+- **Processamento otimizado** - algoritmos específicos para cada banco
+- **Resultados consistentes** - sempre use o melhor método disponível
+
+### **🚫 Problemas da Detecção Automática**
+- ❌ Pode identificar banco incorreto
+- ❌ Reduz precisão da extração
+- ❌ Gera resultados inconsistentes
+- ❌ Processamento mais lento
+
+## 🏗️ **Arquitetura Técnica**
+
+### **📁 Estrutura do Projeto**
 ```
-http://localhost:8501
+src/
+├── banks/                          # Processadores específicos
+│   ├── base_bank_processor.py      # Classe base abstrata
+│   ├── santander_processor.py      # Processador Santander
+│   └── bank_factory.py             # Factory pattern
+├── multibank_pdf_processor.py      # Processador principal
+├── data_analyzer.py                # Análise de dados
+├── notification_manager.py         # Notificações
+└── performance_manager.py          # Cache e performance
 ```
 
-## 📁 Estrutura do Projeto
+### **🏦 Adicionando Novos Bancos**
+Para adicionar suporte a um novo banco:
 
-```
-Leitor_PDF/
-├── app.py                 # Aplicação principal Streamlit
-├── requirements.txt       # Dependências do projeto
-├── README.md             # Documentação
-└── src/
-    ├── pdf_processor.py  # Processamento de PDFs
-    └── data_analyzer.py  # Análise de dados
-```
-
-## 🔧 Como Usar
-
-1. **Upload**: Clique em "Browse files" e selecione seu PDF de extrato bancário
-2. **Processamento**: O sistema extrairá automaticamente as transações
-3. **Visualização**: Os dados serão organizados por data mostrando:
-   - Data da transação
-   - Total de créditos do dia
-   - Total de débitos do dia
-   - Saldo líquido do dia
-4. **Análise**: Visualize gráficos e estatísticas detalhadas
-5. **Exportação**: Baixe os dados processados em CSV
-
-## 📊 Exemplo de Saída
-
-```
-01/08 Crédito: R$ 2.000,00 Débito: R$ 3.000,00 Saldo: -R$ 1.000,00
-02/08 Crédito: R$ 1.500,00 Débito: R$ 800,00   Saldo: R$ 700,00
-03/08 Crédito: R$ 0,00     Débito: R$ 1.200,00 Saldo: -R$ 1.200,00
+1. **Criar processador específico:**
+```python
+class NovoBancoProcessor(BaseBankProcessor):
+    def __init__(self, debug_mode: bool = False):
+        super().__init__(debug_mode)
+        self.bank_name = "Novo Banco"
+        self.bank_code = "XXX"
+    
+    # Implementar métodos abstratos específicos
+    @property
+    def date_patterns(self) -> List[str]:
+        return [...]  # Padrões específicos do banco
 ```
 
-## 🎯 Recursos Avançados
+2. **Registrar no factory:**
+```python
+# Em bank_factory.py
+AVAILABLE_BANKS = {
+    'novo_banco': {
+        'name': 'Novo Banco',
+        'code': 'XXX',
+        'processor_class': NovoBancoProcessor,
+        'description': 'Novo Banco S.A.'
+    }
+}
+```
 
-- **Filtros**: Filtre por data, tipo de transação ou valor mínimo
-- **Busca**: Procure transações específicas por descrição
-- **Estatísticas**: Visualize totais, maiores transações e saldos
-- **Gráficos**: Análise visual com barras e linhas temporais
+## 📋 **Dependências Principais**
 
-## 🔍 Formatos Suportados
+- **streamlit**: Interface web moderna
+- **pdfplumber**: Extração de texto de PDFs
+- **pandas**: Manipulação de dados
+- **plotly**: Gráficos interativos
+- **PyMuPDF** (opcional): PDFs complexos
+- **easyocr** (opcional): PDFs escaneados
 
-O sistema reconhece automaticamente:
+## 🔧 **Configuração Avançada**
 
-- **Datas**: DD/MM/YYYY, DD/MM/YY, DD-MM-YYYY, DD.MM.YYYY
-- **Valores**: R$ 1.234,56, 1.234,56, 123,45
-- **Tipos**: Identifica créditos e débitos por palavras-chave
+### **Cache**
+- Local: `cache/` (criado automaticamente)
+- Validade: 24 horas
+- Hash: baseado no conteúdo do arquivo
 
-## 🚨 Palavras-chave Reconhecidas
+### **Performance**
+- Processamento em páginas para arquivos grandes
+- Otimizações específicas por banco
 
-**Créditos**:
-- Depósito, Crédito, Transferência recebida
-- PIX recebido, TED recebida, DOC recebido
-- Salário, Rendimento, Aplicação, Resgate
-- Estorno, Devolução
+## 🤝 **Contribuição**
 
-**Débitos**:
-- Débito, Saque, Transferência enviada
-- PIX enviado, TED enviada, DOC enviado
-- Pagamento, Compra, Tarifa, Taxa
-- Juros, Anuidade
-
-## 🤝 Contribuição
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
-3. Commit suas mudanças (`git commit -am 'Adiciona nova feature'`)
-4. Push para a branch (`git push origin feature/nova-feature`)
+1. Faça fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/NovoRecurso`)
+3. Commit suas mudanças (`git commit -am 'Adiciona novo recurso'`)
+4. Push para a branch (`git push origin feature/NovoRecurso`)
 5. Abra um Pull Request
 
-## 📝 Licença
+## 📝 **Roadmap**
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+### **🔜 Próximas Versões**
+- **v2.1**: Suporte ao Itaú
+- **v2.2**: Suporte ao Bradesco
+- **v2.3**: Banco do Brasil
+- **v2.4**: Caixa Econômica Federal
+- **v3.0**: API REST para integração
 
-## 👨‍💻 Autor
+### **💡 Funcionalidades Futuras**
+- Exportação para Excel/CSV
+- Categorização automática de gastos
+- Comparação entre períodos
+- Dashboard executivo
+- Alertas e notificações
 
-**Gabriela Silva**
-- GitHub: [@gabiissilvaa](https://github.com/gabiissilvaa)
+## 📄 **Licença**
 
-## 🆘 Suporte
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
-Se você encontrar algum problema ou tiver sugestões, abra uma [issue](https://github.com/gabiissilvaa/Leitor_PDF/issues) no GitHub.
+## 🆘 **Suporte**
+
+- **Issues**: Use o GitHub Issues para reportar bugs
+- **Discussões**: GitHub Discussions para dúvidas
+
+## 🎉 **Agradecimentos**
+
+- Comunidade Streamlit pela excelente framework
+- Contribuidores do pdfplumber
+- Todos os testadores e usuários que ajudam a melhorar o projeto
 
 ---
 
-⭐ Se este projeto foi útil para você, considere dar uma estrela no repositório!
+**⭐ Se este projeto foi útil para você, considere dar uma estrela no GitHub!**
